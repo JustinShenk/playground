@@ -398,24 +398,27 @@ export function getColor(value){
  */
 export function displaySaturation(saturation, layerIdx) {
   // let layerColumns = document.querySelectorAll("div.plus-minus-neurons > div:nth-child(even)");
-  let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div")[layerIdx-1];
-  let layerSatField = layerHeader.childNodes[1]; // span element
-
+  let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx-1];
+  let layerSatField = layerHeader.children[0]; // span element
+  let layerTooltip = layerHeader.children[1];
   let saturationText: string = saturation.toString() + "%";
 
-  // layerColumns[layerIdx-1].textContent = layerColumns[layerIdx-1].textContent
-  //     .replace(new RegExp("neurons.*" + '$'), "neurons\n" + saturationText);
   let value = 0.5;
   if (saturation < 10) {
     value = 0.1;
+    layerTooltip.textContent = "";
+    layerTooltip.setAttribute('style','opacity:0');
   } else if (saturation < 30) {
     value = 0.3;
+    layerTooltip.setAttribute('style','opacity:0');
   } else if (saturation < 90) {
     value = 0.5;
-    // layerSatField.insertAdjacentHTML('afterend', '<span class="tooltiptext">Try increasing layer size</span>');
+    layerTooltip.setAttribute('style','opacity:1');
+    layerTooltip.textContent = "Try increasing layer size";
   } else if (saturation >= 90) {
     value = 1.0;
-    // layerSatField.insertAdjacentHTML('afterend', '<span class="tooltiptext">Try increasing layer size</span>');
+    layerTooltip.setAttribute('style','opacity:1');
+    layerTooltip.textContent = "Try increasing layer size";
   }
 
   let color = getColor(value);

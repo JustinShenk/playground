@@ -700,7 +700,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
   let suffix = state.networkShape[i] > 1 ? "s" : "";
   div.append("div")
       .classed("tooltip", true)
-      .html(state.networkShape[i] + " neuron" + suffix + "\n" + "<span class='saturation'/>"
+      .html(state.networkShape[i] + " neuron" + suffix + "\n" + "<span class='saturation'></span> <span class='tooltiptext'/>"
   );
 }
 
