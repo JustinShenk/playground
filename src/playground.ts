@@ -16,14 +16,14 @@ limitations under the License.
 import * as nn from "./nn";
 import {HeatMap, reduceMatrix} from "./heatmap";
 import {
-  State,
-  datasets,
-  regDatasets,
-  activations,
-  problems,
-  regularizations,
-  getKeyFromValue,
-  Problem
+    State,
+    datasets,
+    regDatasets,
+    activations,
+    problems,
+    regularizations,
+    getKeyFromValue,
+    Problem
 } from "./state";
 import {Example2D, shuffle} from "./dataset";
 import {AppendingLineChart} from "./linechart";
@@ -673,6 +673,7 @@ function addPlusMinusControl(x: number, layerIdx: number) {
         if (numNeurons >= 8) {
           return;
         }
+
         state.networkShape[i]++;
         parametersChanged = true;
         reset();
@@ -697,8 +698,9 @@ function addPlusMinusControl(x: number, layerIdx: number) {
       .text("remove");
 
   let suffix = state.networkShape[i] > 1 ? "s" : "";
-  div.append("div").text(
-    state.networkShape[i] + " neuron" + suffix
+  div.append("div")
+      .classed("tooltip", true)
+      .html(state.networkShape[i] + " neuron" + suffix + "\n" + "<span class='saturation'/>"
   );
 }
 
@@ -944,6 +946,7 @@ function reset(onStartup=false) {
     userHasInteracted();
   }
   player.pause();
+  resetPreactivationHistory();
 
   let suffix = state.numHiddenLayers !== 1 ? "s" : "";
   d3.select("#layers-label").text("Hidden layer" + suffix);
@@ -962,6 +965,10 @@ function reset(onStartup=false) {
   drawNetwork(network);
   updateUI(true);
 };
+
+function resetPreactivationHistory(){
+    nn.resetPreactivationHistory();
+}
 
 function initTutorial() {
   if (state.tutorial == null || state.tutorial === '' || state.hideText) {

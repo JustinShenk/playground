@@ -13,6 +13,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
+import * as PCA from 'ml-pca';
+import * as cov from 'compute-covariance';
+
+export var preactivation_history: number[][][];
+
+preactivation_history = preactivation_history || [];
+
+export function resetPreactivationHistory() {
+  preactivation_history = [];
+  console.log("Reset Preactivation History; Contents: " + preactivation_history)
+}
+
 /**
  * A node in a neural network. Each node has a state
  * (total input, output, and their respectively derivatives) which changes
@@ -68,6 +80,13 @@ export class Node {
     return this.output;
   }
 }
+
+export function transpose(a: number[][]) {
+    return Object.keys(a[0]).map(function(c) {
+        return a.map(function(r) { return r[c]; });
+    });
+}
+
 
 /**
  * An error function and its derivative.
@@ -187,6 +206,7 @@ export class Link {
     }
   }
 }
+
 
 /**
  * Builds a neural network.
@@ -328,14 +348,103 @@ export function backProp(network: Node[][], target: number,
   }
 }
 
+
+/**
+ * Calculate layer saturation
+ */
+
+export function calcSaturation(currentLayer, layerIdx) {
+  // Get layer saturation.
+  let saturation:number = undefined;
+  let preactivation:number[] = [];
+  for (let i = 0; i < currentLayer.length; i++) {
+    let node = currentLayer[i];
+    preactivation.push(node.totalInput);
+  }
+  var layer_history:number[][] = [];
+
+  layer_history = preactivation_history[layerIdx-1];
+  layer_history = (layer_history === undefined) ? []: layer_history;
+  layer_history.push(preactivation);
+  preactivation_history[layerIdx-1] = layer_history;
+
+  if (layer_history.length % 500 === 0) {
+      let historyT = transpose(layer_history);
+      let cov_mat = cov(historyT);
+      let pca = new PCA(cov_mat);
+      let cumulative_var = pca.getCumulativeVariance();
+      for (let k = 1; k <= cumulative_var.length; k++) {
+        if (cumulative_var[k-1] >= 0.99) {
+          saturation = k / cumulative_var.length;
+          saturation = Math.round(saturation * 100);
+          break;
+        }
+      }
+      // let explained_var = pca.getExplainedVariance();
+      console.log(layerIdx, cumulative_var);
+  }
+  return saturation;
+}
+
+export function getColor(value){
+    //value from 0 to 1
+    var hue=((1-value)*120).toString(10);
+    return ["hsl(",hue,",100%,50%)"].join("");
+}
+
+
+/**
+ * Display saturation for each layer.
+ */
+export function displaySaturation(saturation, layerIdx) {
+  // let layerColumns = document.querySelectorAll("div.plus-minus-neurons > div:nth-child(even)");
+  let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div")[layerIdx-1];
+  let layerSatField = layerHeader.childNodes[1]; // span element
+
+  let saturationText: string = saturation.toString() + "%";
+
+  // layerColumns[layerIdx-1].textContent = layerColumns[layerIdx-1].textContent
+  //     .replace(new RegExp("neurons.*" + '$'), "neurons\n" + saturationText);
+  let value = 0.5;
+  if (saturation < 10) {
+    value = 0.1;
+  } else if (saturation < 30) {
+    value = 0.3;
+  } else if (saturation < 90) {
+    value = 0.5;
+    // layerSatField.insertAdjacentHTML('afterend', '<span class="tooltiptext">Try increasing layer size</span>');
+  } else if (saturation >= 90) {
+    value = 1.0;
+    // layerSatField.insertAdjacentHTML('afterend', '<span class="tooltiptext">Try increasing layer size</span>');
+  }
+
+  let color = getColor(value);
+  layerSatField.setAttribute("style", "background-color: " + color);
+
+  layerSatField.textContent = saturationText;
+}
+
+
 /**
  * Updates the weights of the network using the previously accumulated error
  * derivatives.
  */
+
 export function updateWeights(network: Node[][], learningRate: number,
     regularizationRate: number) {
+
   for (let layerIdx = 1; layerIdx < network.length; layerIdx++) {
     let currentLayer = network[layerIdx];
+
+    // Calculate saturation for hidden layers only.
+    if (layerIdx < network.length - 1) {
+      var saturation = calcSaturation(currentLayer, layerIdx);
+      if (saturation !== undefined) {
+        displaySaturation(saturation, layerIdx);
+        console.log("Updating saturation for layer " + layerIdx.toString() + " " + saturation);
+      }
+    }
+
     for (let i = 0; i < currentLayer.length; i++) {
       let node = currentLayer[i];
       // Update the node's bias.
