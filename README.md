@@ -1,6 +1,9 @@
-# Layer Saturation fork of Deep Playground
+# Saturation Playground (fork of [Deep Playground](https://github.com/tensorflow/playground))
 
 ![saturation-playground.gif](saturation-playground.gif)
+
+Feature addition: layer saturation appears above the layer. High saturation (yellow or red) indicates increasing the layer size.
+
 
 ## Development
 
