@@ -1,10 +1,6 @@
-# Deep playground
+# Layer Saturation fork of Deep Playground
 
-Deep playground is an interactive visualization of neural networks, written in
-TypeScript using d3.js. We use GitHub issues for tracking new requests and bugs.
-Your feedback is highly appreciated!
-
-**If you'd like to contribute, be sure to review the [contribution guidelines](CONTRIBUTING.md).**
+![saturation-playground.gif](saturation-playground.gif)
 
 ## Development
 
