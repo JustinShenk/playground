@@ -1,4 +1,4 @@
-# Layer Saturation (fork of [Deep Playground](https://github.com/tensorflow/playground))
+# Saturation Playground (fork of [Deep Playground](https://github.com/tensorflow/playground))
 
 ![saturation-playground.gif](saturation-playground.gif)
 
