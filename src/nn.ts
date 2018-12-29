@@ -22,7 +22,6 @@ preactivation_history = preactivation_history || [];
 
 export function resetPreactivationHistory() {
   preactivation_history = [];
-  console.log("Reset Preactivation History; Contents: " + preactivation_history)
 }
 
 /**
@@ -380,8 +379,6 @@ export function calcSaturation(currentLayer, layerIdx) {
           break;
         }
       }
-      // let explained_var = pca.getExplainedVariance();
-      console.log(layerIdx, cumulative_var);
   }
   return saturation;
 }
@@ -397,7 +394,6 @@ export function getColor(value){
  * Display saturation for each layer.
  */
 export function displaySaturation(saturation, layerIdx) {
-  // let layerColumns = document.querySelectorAll("div.plus-minus-neurons > div:nth-child(even)");
   let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx-1];
   let layerSatField = layerHeader.children[0]; // span element
   let layerTooltip = layerHeader.children[1];
@@ -414,11 +410,19 @@ export function displaySaturation(saturation, layerIdx) {
   } else if (saturation < 90) {
     value = 0.5;
     layerTooltip.setAttribute('style','opacity:1');
-    layerTooltip.textContent = "Try increasing layer size";
+    let layerTooltipText = "Try increasing layer size";
+    if (layerIdx == 1) {
+      layerTooltipText += "\nor adding more features";
+    }
+    layerTooltip.textContent = layerTooltipText;
   } else if (saturation >= 90) {
     value = 1.0;
     layerTooltip.setAttribute('style','opacity:1');
-    layerTooltip.textContent = "Try increasing layer size";
+    let layerTooltipText = "Try increasing layer size";
+    if (layerIdx == 1) {
+      layerTooltipText += "\nor adding more features";
+    }
+    layerTooltip.textContent = layerTooltipText;
   }
 
   let color = getColor(value);
@@ -444,7 +448,6 @@ export function updateWeights(network: Node[][], learningRate: number,
       var saturation = calcSaturation(currentLayer, layerIdx);
       if (saturation !== undefined) {
         displaySaturation(saturation, layerIdx);
-        console.log("Updating saturation for layer " + layerIdx.toString() + " " + saturation);
       }
     }
 
