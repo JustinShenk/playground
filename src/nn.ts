@@ -393,6 +393,7 @@ export function getColor(value){
 /**
  * Display saturation for each layer.
  */
+
 export function displaySaturation(saturation, layerIdx) {
   let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx-1];
   let layerSatField = layerHeader.children[0]; // span element
