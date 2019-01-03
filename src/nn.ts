@@ -351,7 +351,6 @@ export function backProp(network: Node[][], target: number,
 /**
  * Calculate layer saturation
  */
-
 export function calcSaturation(currentLayer, layerIdx) {
   // Get layer saturation.
   let saturation:number = undefined;
@@ -393,7 +392,6 @@ export function getColor(value){
 /**
  * Display saturation for each layer.
  */
-
 export function displaySaturation(saturation, layerIdx) {
   let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx-1];
   let layerSatField = layerHeader.children[0]; // span element
@@ -437,7 +435,6 @@ export function displaySaturation(saturation, layerIdx) {
  * Updates the weights of the network using the previously accumulated error
  * derivatives.
  */
-
 export function updateWeights(network: Node[][], learningRate: number,
     regularizationRate: number) {
 
