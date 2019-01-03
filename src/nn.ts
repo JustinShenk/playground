@@ -404,13 +404,13 @@ export function displaySaturation(saturation, layerIdx) {
   if (saturation < 10) {
     value = 0.1;
     layerTooltip.textContent = "";
-    layerTooltip.setAttribute('style','opacity:0');
+    layerTooltip.setAttribute("style","opacity:0");
   } else if (saturation < 30) {
     value = 0.3;
-    layerTooltip.setAttribute('style','opacity:0');
+    layerTooltip.setAttribute("style","opacity:0");
   } else if (saturation < 90) {
     value = 0.5;
-    layerTooltip.setAttribute('style','opacity:1');
+    layerTooltip.setAttribute("style","opacity:1");
     let layerTooltipText = "Try increasing layer size";
     if (layerIdx == 1) {
       layerTooltipText += "\nor adding more features";
@@ -418,7 +418,7 @@ export function displaySaturation(saturation, layerIdx) {
     layerTooltip.textContent = layerTooltipText;
   } else if (saturation >= 90) {
     value = 1.0;
-    layerTooltip.setAttribute('style','opacity:1');
+    layerTooltip.setAttribute("style","opacity:1");
     let layerTooltipText = "Try increasing layer size";
     if (layerIdx == 1) {
       layerTooltipText += "\nor adding more features";
