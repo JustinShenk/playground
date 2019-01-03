@@ -50,9 +50,19 @@ limitations under the License.
   </a>
   <!-- Header -->
   <header>
-     <h1 class="l--page"><b>Layer Saturation</b> Visualization<br/>
-       <i>Saturation</i>: proportion of eigenvalues of the preactivation covariance matrix needed to explain 99% of variance (arXiv paper coming soon).<br/>
-     </h1>
+  <h1 class="l--page"><b>Layer Saturation</b> Visualization<br/>
+       <div class="select">
+         Metric:
+          <select id="saturation-metric-choice">
+            <option value="inverse_simpson_di">Inverse Simpson Diversity Index</option>
+            <option value="cumulative_99">Cumulative Variance (99%)</option>
+          </select>
+       </div>
+       <i>Saturation</i>:
+       <span id="saturation-description">
+         Inverse Simpson diversity index (sum of the squared explained variance ratios calculated from the preactivation covariance matrix).
+       </span> (arXiv paper coming soon).<br/>
+   </h1>
   </header>
 
   <!-- Top Controls -->
@@ -309,7 +319,6 @@ limitations under the License.
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- More -->

@@ -111,6 +111,7 @@ export class State {
     {name: "regDataset", type: Type.OBJECT, keyMap: regDatasets},
     {name: "learningRate", type: Type.NUMBER},
     {name: "regularizationRate", type: Type.NUMBER},
+    {name: "saturationMetric", type: Type.STRING},
     {name: "noise", type: Type.NUMBER},
     {name: "networkShape", type: Type.ARRAY_NUMBER},
     {name: "seed", type: Type.STRING},
@@ -162,6 +163,7 @@ export class State {
   sinY = false;
   dataset: dataset.DataGenerator = dataset.classifySpiralData;
   regDataset: dataset.DataGenerator = dataset.regressPlane;
+  saturationMetric: string = 'inverse_simpson_di';
   seed: string;
 
   /**

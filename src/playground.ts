@@ -273,6 +273,21 @@ function makeGUI() {
   // Check/uncheck the checkbox according to the current state.
   showTestData.property("checked", state.showTestData);
 
+  let saturationDropdown = d3.select("#saturation-metric-choice").on("change", function() {
+    state.saturationMetric = this.value;
+    let saturationDescText: string;
+    if (this.value === "cumulative_99") {
+      saturationDescText = "proportion of explained variance ratios of the preactivation covariance matrix needed to explain 99% of variance";
+    } else if (this.value == "inverse_simpson_di") {
+      saturationDescText = "inverse Simpson diversity index (sum of the squared explained variance ratios calculated from the preactivation covariance matrix)";
+      }
+    var satDescription = document.getElementById("saturation-description");
+    satDescription.textContent = saturationDescText;
+
+    state.serialize();
+    userHasInteracted();
+  })
+
   let discretize = d3.select("#discretize").on("change", function() {
     state.discretize = this.checked;
     state.serialize();
@@ -915,7 +930,7 @@ function oneStep(): void {
     nn.forwardProp(network, input);
     nn.backProp(network, point.label, nn.Errors.SQUARE);
     if ((i + 1) % state.batchSize === 0) {
-      nn.updateWeights(network, state.learningRate, state.regularizationRate);
+      nn.updateWeights(network, state.learningRate, state.regularizationRate, state.saturationMetric);
     }
   });
   // Compute the loss.

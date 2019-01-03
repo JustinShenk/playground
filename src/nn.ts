@@ -349,17 +349,18 @@ export function backProp(network: Node[][], target: number,
 
 
 /**
- * Calculate layer saturation
+ * Calculate layer saturation for given layer.
  */
 export function calcSaturation(currentLayer, layerIdx) {
   // Get layer saturation.
-  let saturation:number = undefined;
-  let preactivation:number[] = [];
+  let cumulative_99: number = undefined;
+  let inverse_simpson_di: number = undefined;
+  let preactivation: number[] = [];
   for (let i = 0; i < currentLayer.length; i++) {
     let node = currentLayer[i];
     preactivation.push(node.totalInput);
   }
-  var layer_history:number[][] = [];
+  var layer_history: number[][] = [];
 
   layer_history = preactivation_history[layerIdx-1];
   layer_history = (layer_history === undefined) ? []: layer_history;
@@ -370,16 +371,24 @@ export function calcSaturation(currentLayer, layerIdx) {
       let historyT = transpose(layer_history);
       let cov_mat = cov(historyT);
       let pca = new PCA(cov_mat);
+      let explained_var = pca.getExplainedVariance();
+      console.log(explained_var);
+      inverse_simpson_di = 0;
+      for (let k = 1; k <= explained_var.length; k++) {
+        inverse_simpson_di += Math.pow(explained_var[k-1],2);
+      }
+      inverse_simpson_di = Math.round(inverse_simpson_di * 100);
       let cumulative_var = pca.getCumulativeVariance();
       for (let k = 1; k <= cumulative_var.length; k++) {
         if (cumulative_var[k-1] >= 0.99) {
-          saturation = k / cumulative_var.length;
-          saturation = Math.round(saturation * 100);
+          cumulative_99 = k / cumulative_var.length;
+          cumulative_99 = Math.round(cumulative_99 * 100);
           break;
         }
       }
   }
-  return saturation;
+  return {"inverse_simpson_di": inverse_simpson_di,
+        "cumulative_99": cumulative_99}
 }
 
 export function getColor(value){
@@ -391,43 +400,48 @@ export function getColor(value){
 
 /**
  * Display saturation for each layer.
+ * @param saturation Dictionary of saturation metrics.
+ * @param layerIdx Network layer index in [1, N].
+ * @param saturationMetric Either 'cumulative_99' or 'inverse_simpson_di'.
  */
-export function displaySaturation(saturation, layerIdx) {
-  let layerHeader= document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx-1];
-  let layerSatField = layerHeader.children[0]; // span element
-  let layerTooltip = layerHeader.children[1];
-  let saturationText: string = saturation.toString() + "%";
+export function displaySaturation(saturation, layerIdx, saturationMetric) {
+    let layerHeader = document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx - 1];
+    let layerSatField = layerHeader.children[0]; // span element
+    let layerTooltip = layerHeader.children[1];
+    let sat: number = saturation[saturationMetric];
 
-  let value = 0.5;
-  if (saturation < 10) {
-    value = 0.1;
-    layerTooltip.textContent = "";
-    layerTooltip.setAttribute("style","opacity:0");
-  } else if (saturation < 30) {
-    value = 0.3;
-    layerTooltip.setAttribute("style","opacity:0");
-  } else if (saturation < 90) {
-    value = 0.5;
-    layerTooltip.setAttribute("style","opacity:1");
-    let layerTooltipText = "Try increasing layer size";
-    if (layerIdx == 1) {
-      layerTooltipText += "\nor adding more features";
+    let saturationText: string = sat.toString() + "%";
+
+    let colorValue = 0.5;
+    if (sat < 10) {
+        colorValue = 0.1;
+        layerTooltip.textContent = "";
+        layerTooltip.setAttribute("style", "opacity:0");
+    } else if (sat < 30) {
+        colorValue = 0.3;
+        layerTooltip.setAttribute("style", "opacity:0");
+    } else if (sat < 90) {
+        colorValue = 0.5;
+        layerTooltip.setAttribute("style", "opacity:1");
+        let layerTooltipText = "Try increasing layer size";
+        if (layerIdx == 1) {
+            layerTooltipText += "\nor adding more features";
+        }
+        layerTooltip.textContent = layerTooltipText;
+    } else if (sat >= 90) {
+        colorValue = 1.0;
+        layerTooltip.setAttribute("style", "opacity:1");
+        let layerTooltipText = "Try increasing layer size";
+        if (layerIdx == 1) {
+            layerTooltipText += "\nor adding more features";
+        }
+        layerTooltip.textContent = layerTooltipText;
     }
-    layerTooltip.textContent = layerTooltipText;
-  } else if (saturation >= 90) {
-    value = 1.0;
-    layerTooltip.setAttribute("style","opacity:1");
-    let layerTooltipText = "Try increasing layer size";
-    if (layerIdx == 1) {
-      layerTooltipText += "\nor adding more features";
-    }
-    layerTooltip.textContent = layerTooltipText;
-  }
 
-  let color = getColor(value);
-  layerSatField.setAttribute("style", "background-color: " + color);
+    let color = getColor(colorValue);
+    layerSatField.setAttribute("style", "background-color: " + color);
 
-  layerSatField.textContent = saturationText;
+    layerSatField.textContent = saturationText;
 }
 
 
@@ -436,7 +450,7 @@ export function displaySaturation(saturation, layerIdx) {
  * derivatives.
  */
 export function updateWeights(network: Node[][], learningRate: number,
-    regularizationRate: number) {
+    regularizationRate: number, saturationMetric: string) {
 
   for (let layerIdx = 1; layerIdx < network.length; layerIdx++) {
     let currentLayer = network[layerIdx];
@@ -444,8 +458,9 @@ export function updateWeights(network: Node[][], learningRate: number,
     // Calculate saturation for hidden layers only.
     if (layerIdx < network.length - 1) {
       var saturation = calcSaturation(currentLayer, layerIdx);
-      if (saturation !== undefined) {
-        displaySaturation(saturation, layerIdx);
+
+      if (saturation[saturationMetric] !== undefined) {
+        displaySaturation(saturation, layerIdx, saturationMetric);
       }
     }
 
