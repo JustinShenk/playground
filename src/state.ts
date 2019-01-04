@@ -163,7 +163,7 @@ export class State {
   sinY = false;
   dataset: dataset.DataGenerator = dataset.classifySpiralData;
   regDataset: dataset.DataGenerator = dataset.regressPlane;
-  saturationMetric: string = 'inverse_simpson_di';
+  saturationMetric: string = 'simpson_di';
   seed: string;
 
   /**

@@ -278,8 +278,8 @@ function makeGUI() {
     let saturationDescText: string;
     if (this.value === "cumulative_99") {
       saturationDescText = "proportion of explained variance ratios of the preactivation covariance matrix needed to explain 99% of variance";
-    } else if (this.value == "inverse_simpson_di") {
-      saturationDescText = "inverse Simpson diversity index (sum of the squared explained variance ratios calculated from the preactivation covariance matrix)";
+    } else if (this.value == "simpson_di") {
+      saturationDescText = "Simpson diversity index (sum of the squared explained variance ratios calculated from the preactivation covariance matrix)";
       }
     var satDescription = document.getElementById("saturation-description");
     satDescription.textContent = saturationDescText;

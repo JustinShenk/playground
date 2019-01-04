@@ -354,7 +354,7 @@ export function backProp(network: Node[][], target: number,
 export function calcSaturation(currentLayer, layerIdx) {
   // Get layer saturation.
   let cumulative_99: number = undefined;
-  let inverse_simpson_di: number = undefined;
+  let simpson_di: number = undefined;
   let preactivation: number[] = [];
   for (let i = 0; i < currentLayer.length; i++) {
     let node = currentLayer[i];
@@ -373,11 +373,11 @@ export function calcSaturation(currentLayer, layerIdx) {
       let pca = new PCA(cov_mat);
       let explained_var = pca.getExplainedVariance();
       console.log(explained_var);
-      inverse_simpson_di = 0;
+      simpson_di = 0;
       for (let k = 1; k <= explained_var.length; k++) {
-        inverse_simpson_di += Math.pow(explained_var[k-1],2);
+        simpson_di += Math.pow(explained_var[k-1],2);
       }
-      inverse_simpson_di = Math.round(inverse_simpson_di * 100);
+      simpson_di = Math.round(simpson_di * 100);
       let cumulative_var = pca.getCumulativeVariance();
       for (let k = 1; k <= cumulative_var.length; k++) {
         if (cumulative_var[k-1] >= 0.99) {
@@ -387,7 +387,7 @@ export function calcSaturation(currentLayer, layerIdx) {
         }
       }
   }
-  return {"inverse_simpson_di": inverse_simpson_di,
+  return {"simpson_di": simpson_di,
         "cumulative_99": cumulative_99}
 }
 
@@ -402,7 +402,7 @@ export function getColor(value){
  * Display saturation for each layer.
  * @param saturation Dictionary of saturation metrics.
  * @param layerIdx Network layer index in [1, N].
- * @param saturationMetric Either 'cumulative_99' or 'inverse_simpson_di'.
+ * @param saturationMetric Either 'cumulative_99' or 'simpson_di'.
  */
 export function displaySaturation(saturation, layerIdx, saturationMetric) {
     let layerHeader = document.querySelectorAll("div.plus-minus-neurons > div.tooltip")[layerIdx - 1];
