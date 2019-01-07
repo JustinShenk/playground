@@ -369,8 +369,7 @@ export function calcSaturation(currentLayer, layerIdx) {
 
   if (layer_history.length % 500 === 0) {
       let historyT = transpose(layer_history);
-      let cov_mat = cov(historyT);
-      let pca = new PCA(cov_mat);
+      let pca = new PCA(historyT);
       let explained_var = pca.getExplainedVariance();
       console.log(explained_var);
       simpson_di = 0;
