@@ -5,6 +5,7 @@
 About **saturation**: 
 
 - a metric implemented in [Delve](https://github.com/justinshenk/delve) for identifying the diversity of inputs to a layer.
+- two options for calculating saturation (via principal components of neuron preactivation-states over training): "Simpson diversity index" and "Cumulative 99"
 - layer saturation appears above the layer. High saturation (yellow or red) indicates increasing the layer size.
 
 ## Development
