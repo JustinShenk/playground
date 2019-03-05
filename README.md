@@ -8,6 +8,8 @@ About **saturation**:
 - two options for calculating saturation (via principal components of neuron preactivation-states over training): "Simpson diversity index" and "Cumulative 99"
 - layer saturation appears above the layer. High saturation (yellow or red) indicates increasing the layer size.
 
+Instructions from the source repo:
+
 ## Development
 
 To run the visualization locally, run:
@@ -18,8 +20,3 @@ To run the visualization locally, run:
 For a fast edit-refresh cycle when developing run `npm run serve-watch`.
 This will start an http server and automatically re-compile the TypeScript,
 HTML and CSS files whenever they change.
-
-## For owners
-To push to production: `git subtree push --prefix dist origin gh-pages`.
-
-This is not an official Google product.
